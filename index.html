@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麦麦猫 · 麦当劳点餐桌宠</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg1:#1b1530; --bg2:#2a1f4d; --card:#241c42; --line:#3d3168;
+    --txt:#f3efff; --dim:#a99fd0; --acc:#ffb84d; --ok:#6ee7a0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:radial-gradient(1200px 700px at 50% -10%,var(--bg2),var(--bg1));
+    color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:24px 16px 40px;
+  }
+  h1{font-size:22px;font-weight:700;letter-spacing:1px}
+  h1 .hat{color:var(--acc)}
+  .sub{color:var(--dim);font-size:13px;margin:6px 0 14px}
+  .state-pill{
+    font-size:12px;color:var(--acc);background:rgba(255,184,77,.12);
+    border:1px solid rgba(255,184,77,.35);border-radius:99px;padding:4px 14px;margin-bottom:12px;
+  }
+  .stage-wrap{position:relative;width:min(420px,92vw)}
+  .stage{
+    position:relative;border-radius:24px;overflow:hidden;
+    background:linear-gradient(180deg,#312659 0%,#241c42 70%,#1d1636 100%);
+    border:1px solid var(--line);
+    box-shadow:0 20px 50px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  canvas{display:block;width:100%;height:auto;cursor:pointer}
+  /* 顶部状态框：常显，黑底白字（消息时临时替换文字，恢复后回到状态） */
+  .bubble{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    background:rgba(20,12,40,.92);border:1px solid var(--acc);color:#fff;
+    font-size:12px;font-weight:600;letter-spacing:.5px;
+    padding:6px 16px;border-radius:12px;white-space:nowrap;
+    opacity:0;transition:opacity .25s;pointer-events:none;
+    box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:5;
+  }
+  .bubble.show{opacity:1}
+  /* 底部记账框：常显，与顶部框同样式同字体（本次+累计 kcal/金额） */
+  .stat-bar{
+    position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    background:rgba(20,12,40,.92);border:1px solid var(--acc);color:#fff;
+    font-size:12px;font-weight:600;letter-spacing:.5px;
+    padding:6px 16px;border-radius:12px;white-space:nowrap;
+    pointer-events:none;z-index:6;box-shadow:0 4px 12px rgba(0,0,0,.3);
+  }
+  .stat-bar b{color:var(--acc)}
+  /* 单击小猫弹出的左右按钮 */
+  .side-btn{
+    position:absolute;top:42%;width:72px;padding:10px 0;text-align:center;
+    border:0;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;
+    display:none;z-index:8;font-family:inherit;box-shadow:0 3px 0 rgba(0,0,0,.35);
+  }
+  .side-btn.show{display:block}
+  .side-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+  #sb-feed{left:8px;background:linear-gradient(180deg,#ffd27a,#ffb84d);color:#3a2410}
+  #sb-sleep{right:8px;background:linear-gradient(180deg,#9be8bd,#5ed694);color:#0e3b24}
+  /* 投喂 → 猫下方 12 餐品真实图案托盘 */
+  .tray{
+    display:none;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 12px 8px;
+  }
+  .tray.open{display:grid}
+  .tray-title{grid-column:1/-1;font-size:11px;color:var(--dim);text-align:center;margin-bottom:2px}
+  .titem{background:#2d2455;border:1px solid var(--line);border-radius:12px;padding:6px 2px 4px;text-align:center;cursor:pointer;transition:border-color .15s}
+  .titem:hover{border-color:var(--acc)}
+  .titem img{width:40px;height:40px;object-fit:contain;display:block;margin:0 auto}
+  .titem .tnm{font-size:10px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* 投喂旁显卡：这一餐吃了多少 kcal、花了多少钱 */
+  .meal-card{
+    position:absolute;top:34%;right:-2px;background:rgba(24,16,48,.96);
+    border:1px solid var(--acc);border-radius:14px;padding:9px 12px;min-width:136px;
+    z-index:7;pointer-events:none;opacity:0;transform:translateX(12px);
+    transition:opacity .28s, transform .28s;box-shadow:0 8px 22px rgba(0,0,0,.45);
+  }
+  .meal-card.show{opacity:1;transform:translateX(0)}
+  .mc-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:5px;white-space:nowrap}
+  .mc-row{display:flex;justify-content:space-between;gap:14px;font-size:11px;color:var(--dim);line-height:1.65}
+  .mc-row b{color:var(--acc);font-size:12px}
+  .stats{display:flex;gap:8px;margin-top:12px}
+  .stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center}
+  .stat b{display:block;font-size:17px;color:var(--acc)}
+  .stat span{font-size:11px;color:var(--dim)}
+  .btns{display:flex;gap:10px;margin-top:14px}
+  .btn{
+    flex:1;border:0;border-radius:16px;padding:13px 0;font-size:15px;font-weight:700;
+    cursor:pointer;color:#3a2410;background:linear-gradient(180deg,#ffd27a,#ffb84d);
+    box-shadow:0 4px 0 #c9832a, 0 8px 18px rgba(0,0,0,.35);transition:transform .08s, filter .15s;
+    font-family:inherit;
+  }
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #c9832a}
+  .btn.alt{background:linear-gradient(180deg,#9be8bd,#5ed694);box-shadow:0 4px 0 #2f9d67,0 8px 18px rgba(0,0,0,.35);color:#0e3b24}
+  .btn.alt2{background:linear-gradient(180deg,#b8a8ff,#8f7bff);box-shadow:0 4px 0 #5a45c9,0 8px 18px rgba(0,0,0,.35);color:#241a52}
+  .btn.small{flex:.72;font-size:13px;padding:11px 0}
+  .modal{position:fixed;inset:0;background:rgba(10,6,24,.72);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(3px)}
+  .modal.open{display:flex}
+  .sheet{width:min(460px,96vw);max-height:78vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:22px 22px 0 0;padding:18px 16px 26px}
+  .sheet h2{font-size:17px;margin-bottom:4px}
+  .sheet .hint{font-size:12px;color:var(--dim);margin-bottom:14px}
+  .menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .item{display:flex;gap:10px;align-items:center;background:#2d2455;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer;transition:border-color .15s, transform .1s}
+  .item:hover{border-color:var(--acc);transform:translateY(-1px)}
+  .item .emo{width:44px;height:44px;border-radius:12px;background:#3a2f66;flex:none;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+  .item .emo img{width:100%;height:100%;object-fit:contain}
+  .item .nm{font-size:13px;font-weight:600}
+  .item .mt{font-size:11px;color:var(--dim);margin-top:2px}
+  .close{position:sticky;top:0;float:right;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer;line-height:1}
+  .log{margin-top:16px}
+  .log h3{font-size:13px;color:var(--dim);margin-bottom:8px;font-weight:600}
+  .log-item{display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:#2d2455;border-radius:10px;margin-bottom:6px}
+  .log-item .t{color:var(--dim)}
+  .log-item .src{color:#7cc7ff;font-size:10px;margin-left:6px}
+  /* 悬浮小窗模式（?float=1 小弹窗打开时紧凑布局） */
+  body.float-mode{padding:8px 8px 12px}
+  body.float-mode h1, body.float-mode .sub, body.float-mode .log{display:none}
+  body.float-mode .state-pill{margin-bottom:8px}
+  body.float-mode .stats{margin-top:8px}
+  body.float-mode .btns{margin-top:8px}
+  body.float-mode .stage-wrap{width:min(400px,96vw)}
+</style>
+</head>
+<body>
+  <h1>🍔 麦麦猫 <span class="hat">McD Pet</span></h1>
+  <div class="sub">双击小猫切换动作 · 投喂选菜单 · 悬浮窗贴边陪玩 · MCP 点单它自动开吃</div>
+  <div class="state-pill" id="state-pill">加载中…</div>
+
+  <div class="stage-wrap">
+    <div class="stage">
+      <canvas id="cv" width="420" height="420"></canvas>
+      <div class="bubble" id="bubble"></div>
+      <div class="stat-bar" id="stat-bar">还没有吃过东西 · 单击小猫开饭</div>
+      <button class="side-btn" id="sb-feed">🍗 投喂</button>
+      <button class="side-btn" id="sb-sleep">💤 睡觉</button>
+      <div class="meal-card" id="meal-card"></div>
+    </div>
+    <div class="tray" id="tray"><div class="tray-title" id="tray-title">🍗 今天吃点啥？点图案投喂（12 道真实菜单）</div></div>
+    <div class="stats">
+      <div class="stat"><b id="st-meal">0</b><span>今天餐数</span></div>
+      <div class="stat"><b id="st-kcal">0</b><span>摄入 kcal·官方营养表</span></div>
+      <div class="stat"><b id="st-cost">¥0</b><span>花费</span></div>
+      <div class="stat"><b id="st-fat">0</b><span>胖度</span></div>
+    </div>
+    <div class="btns">
+      <button class="btn" id="b-feed">🍗 投喂</button>
+      <button class="btn alt" id="b-sleep">💤 睡觉休息</button>
+      <button class="btn alt2 small" id="b-float">🪟 悬浮窗</button>
+    </div>
+    <div class="log" id="log-wrap" style="display:none">
+      <h3>今天吃了</h3>
+      <div id="log"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="sheet">
+      <button class="close" id="m-close">✕</button>
+      <h2>给麦麦猫投喂</h2>
+      <div class="hint">12 道真实菜单 · 名称/编码/价格来自 MCP <code>query-meals</code> · 热量来自 <code>list-nutrition-foods</code> 官方营养表</div>
+      <div class="menu" id="menu"></div>
+    </div>
+  </div>
+
+<script>
+/* ================= 资产配置 =================
+   网页动作帧：assets/frames/*（吃/喝/睡）
+   Codex 九态帧：run-codex/frames/*（走路/扑/招手…）——同一只猫，直接复用 */
+const CELL_W = 192, CELL_H = 208;
+const FRAME_COUNTS = {
+  idle: 6, eating: 6, drinking: 5, happy: 5, sleeping: 6,             // assets/frames
+  waving: 4, jumping: 5, running: 5, waiting: 5, review: 5, failed: 6, // run-codex/frames
+};
+const STATES = {
+  idle:     { fps: 5, loop: true,  label: "静坐发呆" },
+  eating:   { fps: 6, loop: true,  label: "干饭中",
+              overlay: { x: .58, y: .50, size: 64 } },   /* 锚点 = 嘴部，不挡脸 */
+  drinking: { fps: 6, loop: true,  label: "喝东西",
+              overlay: { x: .58, y: .48, size: 58 } },
+  happy:    { fps: 6, loop: true,  label: "满足" },
+  sleeping: { fps: 4, loop: true,  label: "打呼睡觉", zzz: true },
+  waving:   { fps: 6, loop: true,  label: "招手" },
+  jumping:  { fps: 7, loop: true,  label: "扑向你" },
+  running:  { fps: 8, loop: true,  label: "走来走去", walk: true },
+  waiting:  { fps: 5, loop: true,  label: "眼巴巴" },
+  review:   { fps: 5, loop: true,  label: "歪头打量" },
+  failed:   { fps: 5, loop: true,  label: "委屈" },
+};
+const STATE_LABELS = Object.fromEntries(Object.entries(STATES).map(([k,v])=>[k,v.label]));
+/* 帧来源目录：优先 assets/frames，缺的从 run-codex/frames 补 */
+const FRAME_DIRS = { __proto__: null };
+for(const st of Object.keys(FRAME_COUNTS))
+  FRAME_DIRS[st] = (st in {idle:1,eating:1,drinking:1,happy:1,sleeping:1})
+    ? `assets/frames/${st}` : `run-codex/frames/${st}`;
+
+/* 菜单：与 menu_map.json 同源。名称/编码/价格来自麦当劳 MCP query-meals（门店 1420257，2026-10-09）；
+   kcal 来自 list-nutrition-foods 官方营养表（2026-10-10 快照），规格以营养表口径为准 */
+const MENU = [
+  { id:"bigmac",     code:"1100",       name:"巨无霸",       emo:"🍔", kcal:513, price:26.0, type:"eat"   },
+  { id:"mccrispy",   code:"1440",       name:"麦辣鸡腿汉堡", emo:"🍔", kcal:485, price:22.5, type:"eat"   },
+  { id:"grilled",    code:"1406",       name:"板烧鸡腿堡",   emo:"🍔", kcal:391, price:23.5, type:"eat"   },
+  { id:"dblcheese",  code:"1120",       name:"双层吉士汉堡", emo:"🍔", kcal:429, price:23.0, type:"eat"   },
+  { id:"mcnuggets5", code:"1401",       name:"麦乐鸡",       emo:"🍗", kcal:213, price:14.0, type:"eat"   },
+  { id:"fries-m",    code:"4810",       name:"薯条",         emo:"🍟", kcal:289, price:14.5, type:"eat"   },
+  { id:"mcflurry",   code:"9900008754", name:"经典麦旋风",   emo:"🍦", kcal:266, price:15.5, type:"eat"   },
+  { id:"cone",       code:"515837",     name:"圆筒冰淇淋",   emo:"🍦", kcal:93, price:5.0,  type:"eat"   },
+  { id:"taropie",    code:"9900008752", name:"派",           emo:"🥧", kcal:232, price:8.0,  type:"eat"   },
+  { id:"corn",       code:"4437",       name:"玉米杯",       emo:"🌽", kcal:87, price:13.0, type:"eat"   },
+  { id:"coke-m",     code:"9900008751", name:"可乐",         emo:"🥤", kcal:147, price:9.5,  type:"drink" },
+  { id:"coffee-m",   code:"507409",     name:"麦咖啡™奶铁",  emo:"☕", kcal:186, price:13.9, type:"drink" },
+];
+const DRINK_KEYWORDS = ["可乐","雪碧","咖啡","奶铁","美式","红茶","牛奶","果汁","雪冰","柠檬","燕麦奶","纯悦","怡泉"];
+
+/* ================= 存档 ================= */
+const SAVE_KEY = "mcd_pet_stats_v2";
+let stats = load();
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if(s && typeof s.kcal === "number") return s;
+  }catch(e){}
+  return { kcal:0, cost:0, meals:0, fat:0, log:[], last:null };
+}
+function save(){ localStorage.setItem(SAVE_KEY, JSON.stringify(stats)); renderStats(); }
+
+/* ================= 动画引擎 ================= */
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+const frames = {};        // state -> [Image]
+const foodImgs = {};      // food id -> Image | null
+const avail = {};         // state -> bool
+let cur = "idle", fi = 0, ft = 0, last = 0;
+let overlayFood = null;
+let eatTick = 0;          // 吃/喝推进的帧数（决定食物被咬小的程度）
+let facing = 1;           // 1 右 / -1 左
+let px = .5;              // 猫在舞台上的水平位置 0..1
+let walkTarget = null;    // 闲逛目标
+let zzz = [];             // 睡觉 Z 粒子
+let seqTimer = null;      // 序列收尾定时器
+let userHold = false;     // 用户操作/进餐期间，自动循环让路
+
+function loadImage(src){
+  return new Promise(res => {
+    const im = new Image();
+    im.onload = () => res(im);
+    im.onerror = () => res(null);
+    im.src = src;
+  });
+}
+
+async function loadAssets(){
+  const jobs = [];
+  for(const [st, n] of Object.entries(FRAME_COUNTS)){
+    frames[st] = [];
+    for(let i = 0; i < n; i++){
+      const nn = String(i).padStart(2, "0");
+      jobs.push(loadImage(`${FRAME_DIRS[st]}/f${nn}.png`).then(im => {
+        if(im) frames[st].push(im);
+      }));
+    }
+  }
+  for(const m of MENU){
+    jobs.push(loadImage(`assets/food/${m.id}.png`).then(im => { foodImgs[m.id] = im; }));
+  }
+  await Promise.all(jobs);
+  for(const st of Object.keys(STATES)) avail[st] = (frames[st] || []).length > 0;
+}
+
+function setPill(){
+  document.getElementById("state-pill").textContent = `当前动作：${STATE_LABELS[cur] || cur}`;
+}
+
+/* 顶部框：只在有动作时出现（切换/投喂/MCP 来单），消息结束即隐藏，休闲时只留猫 */
+function bubble(txt, ms = 2200){
+  const b = $("bubble"); b.textContent = txt; b.classList.add("show");
+  clearTimeout(b.__t); b.__t = setTimeout(() => b.classList.remove("show"), ms);
+}
+
+function clearSeq(){ clearTimeout(seqTimer); seqTimer = null; }
+
+function setState(st){
+  if(!avail[st]) st = "idle";
+  clearSeq();
+  cur = st; fi = 0; ft = 0;
+  eatTick = 0;
+  walkTarget = null;
+  setPill();
+}
+
+/* 一次性动作：dur 秒后回调 */
+function playFor(st, dur, done){
+  setState(st);
+  seqTimer = setTimeout(() => { seqTimer = null; done && done(); }, dur * 1000);
+}
+
+function draw(){
+  const t = performance.now();
+  const dt = Math.min((t - last) / 1000, .1); last = t;
+  const conf = STATES[cur] || STATES.idle;
+  const fs = frames[cur] && frames[cur].length ? frames[cur] : frames.idle;
+  if(fs && fs.length){
+    ft += dt;
+    const spf = 1 / (conf.fps || 5);
+    while(ft >= spf){
+      ft -= spf; fi++;
+      if(fi >= fs.length) fi = 0;
+      eatTick = (cur === "eating" || cur === "drinking") ? eatTick + 1 : 0;
+    }
+  }
+  // 闲逛位移
+  if(cur === "running" && walkTarget !== null){
+    const speed = .22; // 每秒舞台宽度比例
+    const d = walkTarget - px;
+    if(Math.abs(d) <= speed * dt){ px = walkTarget; walkTarget = null; }
+    else px += Math.sign(d) * speed * dt;
+    facing = d >= 0 ? 1 : -1;
+    if(walkTarget === null) finishStep("idle");
+  }
+  ctx.clearRect(0, 0, cv.width, cv.height);
+
+  // 地板参考线（微弱）
+  ctx.strokeStyle = "rgba(255,255,255,.05)";
+  ctx.beginPath(); ctx.ellipse(cv.width/2, cv.height-14, 130, 14, 0, 0, Math.PI*2); ctx.stroke();
+
+  const S = Math.min(cv.width / CELL_W, (cv.height - 10) / CELL_H) * .92;
+  const dw = CELL_W * S, dh = CELL_H * S;
+  const cx = px * (cv.width - dw) + dw / 2;
+  const baseY = cv.height - 18;
+  const fat = Math.min(stats.fat, 6);
+  const sx = 1 + fat * 0.045, sy = 1 + fat * 0.018;
+  let bob = 0;
+  if(cur === "idle") bob = Math.sin(t / 600) * 2;
+  if(cur === "jumping") bob = -Math.abs(Math.sin(t / 300)) * 26;   // 扑腾的纵向弧线
+  if(cur === "running") bob = Math.abs(Math.sin(t / 120)) * 4;
+
+  // 猫本体（facing 翻转）
+  ctx.save();
+  ctx.translate(cx, baseY + bob);
+  ctx.scale(facing * S * sx, S * sy);
+  ctx.drawImage(fs[Math.min(fi, fs.length - 1)] || fs[0], -CELL_W / 2, -CELL_H);
+  // 食物覆盖层（贴在嘴边，随吃的进度越咬越小、越来越淡）
+  if((cur === "eating" || cur === "drinking") && overlayFood){
+    const ov = STATES[cur].overlay;
+    const prog = Math.min(1, eatTick / Math.max(1, fs.length * 2));
+    const bite  = cur === "eating" ? (1 - prog * 0.55) : (1 - prog * 0.35);
+    const alpha = cur === "eating" ? Math.max(0.25, 1 - prog * 0.65)
+                                   : Math.max(0.40, 1 - prog * 0.50);
+    const size = ov.size * bite * (1 + Math.sin(t / 120) * 0.04);
+    const fim = foodImgs[overlayFood.id];
+    const ox = (ov.x - .5) * CELL_W, oy = -(1 - ov.y) * CELL_H;
+    ctx.globalAlpha = alpha;
+    if(fim){ ctx.drawImage(fim, ox - size / 2, oy - size / 2, size, size); }
+    else{
+      ctx.font = `${size * .8}px serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(overlayFood.emo, ox, oy);
+    }
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+
+  // 睡觉 Zzz 粒子
+  if(conf.zzz && cur === "sleeping"){
+    if(!draw.__z || t - draw.__z > 700){
+      draw.__z = t;
+      zzz.push({ x: cx + 30 + Math.random()*10, y: baseY - dh * .78, a: 1, s: 12 + Math.random()*8 });
+    }
+  }
+  zzz = zzz.filter(z => z.a > 0);
+  for(const z of zzz){
+    z.y -= dt * 26; z.x += dt * 12; z.a -= dt * .5;
+    ctx.font = `600 ${z.s}px "Segoe UI Emoji",sans-serif`;
+    ctx.fillStyle = `rgba(200,190,255,${Math.max(z.a,0)})`;
+    ctx.textAlign = "center";
+    ctx.fillText("Z", z.x, z.y);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+/* ================= UI ================= */
+const $ = id => document.getElementById(id);
+function renderStats(){
+  $("st-meal").textContent = stats.meals;
+  $("st-kcal").textContent = Math.round(stats.kcal);
+  $("st-cost").textContent = "¥" + stats.cost.toFixed(1);
+  $("st-fat").textContent = stats.fat;
+  /* 底部记账框：投喂后才出现（随文字自适应宽度），一段时间后自动隐藏 */
+  const sb = $("stat-bar"), lo = stats.last;
+  if(!lo){ sb.style.display = "none"; }
+  else{
+    sb.style.display = "";
+    sb.innerHTML = `本次 <b>${lo.kcal}kcal·¥${Number(lo.price).toFixed(1)}</b> ｜ 累计 <b>${stats.meals}</b>餐·<b>${Math.round(stats.kcal)}kcal·¥${stats.cost.toFixed(1)}</b>`;
+  }
+  const lw = $("log-wrap"), lg = $("log");
+  if(stats.log.length){ lw.style.display = ""; lg.innerHTML = stats.log.slice(-8).reverse().map(e =>
+    `<div class="log-item"><span>${e.emo||"🍽️"} ${e.name}${e.src?`<span class="src">${e.src}</span>`:""}</span><span class="t">${e.kcal||0} kcal · ¥${e.price||0}</span></div>`).join("");
+  } else lw.style.display = "none";
+}
+/* 底部记账框：投喂/睡醒后出现，回休闲 12 秒后自动收起，避免遮挡 */
+let statHideT = null;
+function showStatBar(){
+  if(!stats.last) return;
+  $("stat-bar").style.display = "";
+  clearTimeout(statHideT);
+  statHideT = setTimeout(() => { $("stat-bar").style.display = "none"; }, 12000);
+}
+function renderMenu(){
+  $("menu").innerHTML = MENU.map(m => `
+    <div class="item" data-id="${m.id}">
+      <div class="emo">${foodImgs[m.id] ? `<img src="assets/food/${m.id}.png">` : m.emo}</div>
+      <div><div class="nm">${m.name}</div>
+      <div class="mt">${m.kcal} kcal · ¥${m.price}</div></div>
+    </div>`).join("");
+  $("menu").querySelectorAll(".item").forEach(el =>
+    el.onclick = () => { $("modal").classList.remove("open"); feed(el.dataset.id); });
+}
+
+/* ================= 交互动作 ================= */
+function feed(id, opts = {}){
+  const m = MENU.find(x => x.id === id); if(!m) return;
+  userHold = true;
+  stats.meals++; stats.kcal += m.kcal; stats.cost += m.price;
+  stats.fat = Math.min(6, stats.fat + (m.type === "drink" ? 0.5 : 1));
+  stats.log.push({ name: m.name, emo: m.emo, kcal: m.kcal, price: m.price, src: opts.src || "" });
+  stats.last = { name: m.name, kcal: m.kcal, price: m.price };
+  save();
+  showStatBar();
+  hideSide();
+  overlayFood = m;
+  setState(m.type === "drink" ? "drinking" : "eating");
+  bubble(`嗷呜~ ${m.name}！`);
+  showMealCard(m);
+  playFor(cur, STATES[cur].once || 3.2, afterMealRest);
+}
+/* 旁显这一餐：摄入 kcal（MCP 官方营养表）+ 消费金额 */
+function showMealCard(m){
+  const mc = $("meal-card"); if(!mc) return;
+  mc.innerHTML =
+    `<div class="mc-name">${m.emo || "🍽️"} ${m.name}</div>` +
+    `<div class="mc-row"><span>摄入</span><b>${m.kcal} kcal</b></div>` +
+    `<div class="mc-row"><span>消费</span><b>¥${Number(m.price || 0).toFixed(1)}</b></div>`;
+  mc.classList.add("show");
+  clearTimeout(window.__mcT);
+  window.__mcT = setTimeout(() => mc.classList.remove("show"), 4500);
+}
+function afterMealRest(){
+  overlayFood = null;
+  if(!avail.happy){ setState("idle"); userHold = false; scheduleAmbient(3000); return; }
+  setState("happy");
+  bubble("吃饱了…眯一会儿", 2400);
+  seqTimer = setTimeout(() => {          // 吃完休息：短睡 6 秒自动醒
+    seqTimer = null;
+    nap(6, "Zzz… 吃饱就睡，猫生赢家");
+  }, 1400);
+}
+function nap(dur, msg){
+  if(!avail.sleeping){ setState("idle"); userHold = false; scheduleAmbient(3000); return; }
+  overlayFood = null;
+  setState("sleeping");
+  if(msg) bubble(msg, 2400);
+  if(dur) seqTimer = setTimeout(() => { seqTimer = null; wakeUp(); }, dur * 1000);
+  else seqTimer = setTimeout(() => { seqTimer = null; }, 30 * 60 * 1000);  // 手动睡上限 30 分钟
+}
+function wakeUp(){
+  if(cur !== "sleeping") return;
+  zzz = []; userHold = false;
+  if(avail.happy) playFor("happy", 1.2, () => setState("idle"));
+  else setState("idle");
+  bubble("喵呜…睡饱了");
+  showStatBar();          // 睡醒再看一眼账，12 秒后自动收起
+  scheduleAmbient(6000);
+}
+function doSleep(){
+  if(cur === "sleeping"){ wakeUp(); return; }
+  userHold = true;
+  nap(0, "Zzz… 打呼中，点「睡觉休息」叫醒");
+}
+$("b-feed").onclick = () => { renderMenu(); $("modal").classList.add("open"); };
+$("b-sleep").onclick = doSleep;
+$("m-close").onclick = () => $("modal").classList.remove("open");
+$("modal").onclick = e => { if(e.target === $("modal")) $("modal").classList.remove("open"); };
+
+/* 单击小猫 → 猫左右两侧弹出「🍗 投喂」「💤 睡觉」按钮；投喂 → 12 餐品图案托盘 */
+let clickTimer = null;
+cv.addEventListener("click", () => {
+  if(cur === "sleeping"){ wakeUp(); return; }
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(toggleSide, 280);   // 与双击区分：延迟出面板
+});
+function toggleSide(){
+  if($("sb-feed").classList.contains("show")){ hideSide(); return; }
+  hideSide();
+  $("sb-feed").classList.add("show");
+  $("sb-sleep").classList.add("show");
+  bubble("想吃啥？点旁边按钮~", 1800);
+}
+function hideSide(){
+  clearTimeout(clickTimer);
+  $("sb-feed").classList.remove("show");
+  $("sb-sleep").classList.remove("show");
+  $("tray").classList.remove("open");
+}
+function renderTray(){
+  $("tray").querySelectorAll(".titem").forEach(el => el.remove());
+  const frag = document.createDocumentFragment();
+  for(const m of MENU){
+    const d = document.createElement("div");
+    d.className = "titem"; d.dataset.id = m.id; d.title = `${m.name} · ${m.kcal} kcal · ¥${m.price}`;
+    d.innerHTML = (foodImgs[m.id] ? `<img src="assets/food/${m.id}.png" alt="${m.name}">` : `<div style="font-size:24px">${m.emo}</div>`)
+      + `<div class="tnm">${m.name.length > 5 ? m.name.slice(0, 5) : m.name}</div>`;
+    frag.appendChild(d);
+  }
+  $("tray").appendChild(frag);
+  $("tray").querySelectorAll(".titem").forEach(el =>
+    el.onclick = () => { hideSide(); feed(el.dataset.id); });
+}
+$("sb-feed").onclick = e => { e.stopPropagation(); renderTray(); $("tray").classList.toggle("open"); };
+$("sb-sleep").onclick = e => { e.stopPropagation(); hideSide(); doSleep(); };
+document.addEventListener("click", e => {
+  if(e.target === cv || e.target.closest(".side-btn") || e.target.closest("#tray")) return;
+  hideSide();
+});
+
+/* ================= 双击切换动作（手动循环） =================
+   静坐 → 走来走去 → 扑向你 → 休息，双击一次走一步 */
+const CYCLE = ["sit", "walk", "pounce", "rest"];
+const CYCLE_LABEL = { sit:"静坐休息", walk:"走来走去", pounce:"扑向你", rest:"打盹休息" };
+let cycleIdx = 0;
+cv.addEventListener("dblclick", e => {
+  e.preventDefault();
+  hideSide();          // 双击：取消待弹的单击面板并收起
+  userHold = true;
+  if(cur === "sleeping"){ cycleIdx = 0; wakeUp(); return; }
+  cycleIdx = (cycleIdx + 1) % CYCLE.length;
+  runCycleStep(true);
+});
+function runCycleStep(manual){
+  /* manual=true（双击）才出顶部文字；自动闲逛保持安静，休闲时只留猫 */
+  const step = CYCLE[cycleIdx];
+  if(step === "sit"){
+    setState("idle");
+    if(manual){ bubble("（安静坐好）"); holdThenRelease(3); }
+  } else if(step === "walk" && avail.running){
+    walkTarget = px < .5 ? .62 + Math.random() * .26 : .12 + Math.random() * .26;
+    setState("running");
+    if(manual){ bubble("溜达溜达~", 1500); holdThenRelease(6); }
+  } else if(step === "pounce" && avail.jumping){
+    setState("jumping");
+    if(manual){ bubble("噗！扑向你~", 1500); holdThenRelease(4); }
+    playFor("jumping", 1.8, () => finishStep("idle"));
+  } else if(step === "rest"){
+    nap(manual ? 8 : 5, manual ? "Zzz… 休息一下" : "");
+  } else {
+    setState("idle"); userHold = false; scheduleAmbient(4000);
+  }
+}
+function holdThenRelease(sec){
+  clearTimeout(holdThenRelease.__t);
+  holdThenRelease.__t = setTimeout(() => {
+    if(cur === "idle"){ userHold = false; scheduleAmbient(5000 + Math.random() * 5000); }
+  }, sec * 1000);
+}
+/* 一步结束回 idle 的统一出口 */
+function finishStep(next){
+  setState(next);
+}
+
+/* ================= 自动状态循环（无人操作时） =================
+   顺序：静坐 → 左右走来走去 → 扑向你玩耍 → 休息打盹，循环往复。
+   用户操作（按钮/双击/进餐）永远优先，自动循环只在空闲时接管。 */
+let ambientTimer = null;
+function scheduleAmbient(ms){
+  clearTimeout(ambientTimer);
+  ambientTimer = setTimeout(doAmbient, ms || 6000 + Math.random() * 7000);
+}
+let autoIdx = 0;
+function doAmbient(){
+  if(userHold || cur !== "idle"){ scheduleAmbient(4000); return; }   // 忙碌让路，稍后再试
+  const step = CYCLE[autoIdx % CYCLE.length];
+  autoIdx++;
+  if(step === "sit"){
+    scheduleAmbient(5000 + Math.random() * 5000);   // 静坐 = 多待一会儿再动
+  } else {
+    runCycleStep(false);
+    scheduleAmbient(9000 + Math.random() * 6000);
+  }
+}
+
+/* ================= 悬浮小窗 =================
+   优先 Document Picture-in-Picture（Edge/Chrome 原生置顶小窗，直播 DOM 不重载），
+   不支持则回退 window.open 小弹窗（?float=1 紧凑布局）。 */
+let pipWin = null, floatPopup = null;
+function setFloatBtn(on){
+  $("b-float").textContent = on ? "🪟 收回悬浮窗" : "🪟 悬浮窗";
+}
+async function toggleFloat(){
+  if(pipWin){ try{ pipWin.close(); }catch(_){ } return; }
+  if(floatPopup && !floatPopup.closed){ floatPopup.close(); floatPopup = null; setFloatBtn(false); return; }
+  if("documentPictureInPicture" in window){
+    try{
+      pipWin = await documentPictureInPicture.requestWindow({ width: 410, height: 560 });
+      pipWin.document.body.style.cssText =
+        'margin:0;background:radial-gradient(700px 420px at 50% -10%,#2a1f4d,#1b1530);' +
+        'min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:6px;overflow:hidden';
+      const wrap = document.querySelector(".stage-wrap");
+      pipWin.document.body.appendChild(wrap);       // 活 DOM 整体搬进小窗，状态不丢
+      pipWin.addEventListener("pagehide", () => {
+        pipWin = null;
+        document.body.appendChild(wrap);            // 关小窗时搬回主页面
+        setFloatBtn(false);
+      });
+      setFloatBtn(true);
+      bubble("我在小窗里陪着你~");
+      return;
+    }catch(_){ pipWin = null; /* 落到弹窗兜底 */ }
+  }
+  const w = 420, h = 640;
+  const opt = `width=${w},height=${h},menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no`;
+  floatPopup = window.open(location.href.split("#")[0].split("?")[0] + "?float=1", "mcdpet_float", opt);
+  if(floatPopup){
+    try{ floatPopup.moveTo(Math.max(20, screen.width - w - 40), Math.round(screen.height * 0.5)); }catch(_){}
+    floatPopup.focus();
+    setFloatBtn(true);
+    const t = setInterval(() => {
+      if(!floatPopup || floatPopup.closed){ clearInterval(t); floatPopup = null; setFloatBtn(false); }
+    }, 800);
+  } else {
+    bubble("浏览器拦截了弹窗，请允许本站弹窗后重试", 3600);
+  }
+}
+$("b-float").onclick = toggleFloat;
+if(new URLSearchParams(location.search).get("float") === "1"){
+  document.body.classList.add("float-mode");
+  document.title = "麦麦猫";
+}
+
+/* ================= MCP 点餐联动 =================
+   A. 同源 HTTP（tools/order_server.py）：轮询 /api/events，Codex 点单后 order_hook 推送事件
+   B. 任意页面手动调用：McdPet.onOrdered("巨无霸") 或 onOrdered({name,price,kcal}) */
+function handleOrder(e){
+  const q = String(e.name || "").trim(); if(!q) return;
+  if(cur === "sleeping"){ zzz = []; bubble("闻到麦当劳的香味，惊醒！", 2000); }
+  let m = MENU.find(x => (e.code && x.code === String(e.code)))
+       || MENU.find(x => x.name === q)
+       || MENU.find(x => x.name.includes(q) || q.includes(x.name));
+  if(!m){
+    const isDrink = e.type === "drink" || DRINK_KEYWORDS.some(k => q.includes(k));
+    m = { id: "__tmp_" + Date.now(), code: "", name: q, emo: isDrink ? "🥤" : "🍽️",
+          kcal: e.kcal || 0, price: e.price || 0, type: isDrink ? "drink" : "eat" };
+    MENU.push(m);
+  }
+  bubble(`📩 麦当劳来单啦：${m.name} · ¥${m.price} · ${m.kcal} kcal`, 4200);
+  feed(m.id, { rest: true, src: "MCP" });
+}
+if(location.protocol.startsWith("http")){
+  /* 游标持久化：刷新页面不重放旧订单；首次访问快进到最新（不补吃历史）
+     双源轮询：相对路径（点餐桥直接托管时）+ 绝对 8787（WorkBuddy 预览面板/其他静态服务托管时，CORS 已放行） */
+  const CUR_KEY = "mcd_pet_cursor";
+  let lastId = Number(localStorage.getItem(CUR_KEY) || 0);
+  let booted = lastId > 0;
+  const SOURCES = ["api/events", "http://127.0.0.1:8787/api/events"];
+  setInterval(async () => {
+    for(const src of SOURCES){
+      try{
+        const r = await fetch(`${src}?after=${lastId}`);
+        if(!r.ok) continue;
+        const j = await r.json();
+        const evs = j.events || [];
+        if(!evs.length) return;
+        if(!booted){                       // 首次进入：只快进游标，不重放
+          booted = true;
+          lastId = evs[evs.length - 1].id;
+          localStorage.setItem(CUR_KEY, String(lastId));
+          return;
+        }
+        for(const ev of evs){
+          if(ev.id > lastId){
+            lastId = ev.id;
+            localStorage.setItem(CUR_KEY, String(lastId));
+            handleOrder(ev);
+          }
+        }
+        return;                            // 一个源成功即止（游标去重）
+      }catch(_){}
+    }
+  }, 2000);
+}
+
+/* ============ 对外 API ============ */
+window.McdPet = {
+  onOrdered(name){
+    if(typeof name === "object" && name) return handleOrder(name), true;
+    return handleOrder({ name }), true;
+  },
+  feed(id){ feed(id); },
+  sleep(){ doSleep(); },
+  stats(){ return JSON.parse(JSON.stringify(stats)); },
+  reset(){ stats = { kcal:0, cost:0, meals:0, fat:0, log:[], last:null }; save(); setState("idle"); },
+};
+
+/* ================= 启动 ================= */
+loadAssets().then(() => {
+  renderStats();
+  setState("idle");
+  scheduleAmbient(7000);
+  requestAnimationFrame(t => { last = t; draw(); });
+  bubble("双击我可以切换动作哦！", 3000);
+});
+</script>
+</body>
+</html>

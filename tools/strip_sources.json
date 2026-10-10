@@ -1,0 +1,9 @@
+{
+  "_note": "state -> 生成的横排动画条带相对路径。新增条带后登记进来，重跑 tools/slice_strips.py 即可增量切片。",
+  "idle": "generated/Create_one_horizontal_animatio_2026-10-09T07-52-22.png",
+  "eating": "generated/Create_one_horizontal_animatio_2026-10-09T07-52-24.png",
+  "drinking": "generated/strip_drinking.png",
+  "sleeping": "generated/Create_one_horizontal_animatio_2026-10-09T08-05-13.png",
+  "litter": "generated/strip_litter.png",
+  "happy": "generated/strip_happy.png"
+}

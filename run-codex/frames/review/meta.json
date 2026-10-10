@@ -1,0 +1,13 @@
+{
+  "state": "review",
+  "frame_count": 5,
+  "source": "run-codex\\decoded\\review.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    123,
+    191
+  ]
+}

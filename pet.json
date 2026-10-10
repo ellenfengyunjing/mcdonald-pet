@@ -1,0 +1,35 @@
+{
+  "id": "custom:mcd-maimai",
+  "displayName": "麦麦猫",
+  "description": "麦当劳主题的橘白圣诞帽猫咪桌宠：你点单它就吃，Codex 干活时它抱着汉堡埋头苦干，跑任务时小跑去麦当劳上班。",
+
+  "_comment": "本文件是桌宠的「源配置」，改这里就能换形象 / 换动作 / 换行序，然后跑 tools/build_spritesheet.py 重新出图。",
+
+  "spritesheet": {
+    "cell": { "width": 192, "height": 208 },
+    "grid": { "columns": 8, "rows": 9 },
+    "_contract": "Codex / hatch-pet 九行契约：行序固定，未用列留全透明。每行动画帧从 f00.png 起顺序排列。",
+    "rows": [
+      { "row": 0, "state": "idle",          "dir": "run-codex/frames/idle",          "mirror": false, "maxFrames": 8, "meaning": "待机：呼吸、眨眼" },
+      { "row": 1, "state": "running-right", "dir": "run-codex/frames/running-right", "mirror": false, "maxFrames": 8, "meaning": "向右小跑去上班" },
+      { "row": 2, "state": "running-left",  "dir": "run-codex/frames/running-right", "mirror": true,  "maxFrames": 8, "meaning": "向左小跑（由 row1 镜像派生）" },
+      { "row": 3, "state": "waving",        "dir": "run-codex/frames/waving",        "mirror": false, "maxFrames": 8, "meaning": "举爪招手迎客" },
+      { "row": 4, "state": "jumping",       "dir": "run-codex/frames/jumping",       "mirror": false, "maxFrames": 8, "meaning": "蹲跳接汉堡（纵向弧线）" },
+      { "row": 5, "state": "failed",        "dir": "run-codex/frames/failed",        "mirror": false, "maxFrames": 8, "meaning": "任务失败：耷耳委屈" },
+      { "row": 6, "state": "waiting",       "dir": "run-codex/frames/waiting",       "mirror": false, "maxFrames": 8, "meaning": "双爪合十讨食" },
+      { "row": 7, "state": "running",       "dir": "run-codex/frames/running",       "mirror": false, "maxFrames": 8, "meaning": "抱着汉堡埋头苦干（Codex 干活时的默认动作）" },
+      { "row": 8, "state": "review",        "dir": "run-codex/frames/review",        "mirror": false, "maxFrames": 8, "meaning": "歪头审视，像美食评委" }
+    ]
+  },
+
+  "output": {
+    "dir": "dist",
+    "png": "spritesheet.png",
+    "webp": "spritesheet.webp"
+  },
+
+  "install": {
+    "target": "~/.codex/pets/mcd-maimai",
+    "spritesheetPath": "spritesheet.png"
+  }
+}

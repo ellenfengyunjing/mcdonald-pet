@@ -1,0 +1,122 @@
+{
+  "idle": {
+    "state": "idle",
+    "frame_count": 6,
+    "source": "generated\\Create_one_horizontal_animatio_2026-10-09T07-52-22.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      104,
+      191
+    ],
+    "union_box": [
+      0,
+      391,
+      213,
+      787
+    ],
+    "baseline_offset": 17
+  },
+  "eating": {
+    "state": "eating",
+    "frame_count": 6,
+    "source": "generated\\Create_one_horizontal_animatio_2026-10-09T07-52-24.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      99,
+      191
+    ],
+    "union_box": [
+      0,
+      468,
+      198,
+      855
+    ],
+    "baseline_offset": 17
+  },
+  "drinking": {
+    "state": "drinking",
+    "frame_count": 5,
+    "source": "generated\\strip_drinking.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      100,
+      191
+    ],
+    "union_box": [
+      0,
+      295,
+      245,
+      766
+    ],
+    "baseline_offset": 17
+  },
+  "sleeping": {
+    "state": "sleeping",
+    "frame_count": 6,
+    "source": "generated\\Create_one_horizontal_animatio_2026-10-09T08-05-13.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      106,
+      191
+    ],
+    "union_box": [
+      0,
+      357,
+      218,
+      754
+    ],
+    "baseline_offset": 17
+  },
+  "litter": {
+    "state": "litter",
+    "frame_count": 6,
+    "source": "generated\\strip_litter.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      106,
+      191
+    ],
+    "union_box": [
+      0,
+      379,
+      191,
+      728
+    ],
+    "baseline_offset": 17
+  },
+  "happy": {
+    "state": "happy",
+    "frame_count": 5,
+    "source": "generated\\strip_happy.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      94,
+      191
+    ],
+    "union_box": [
+      0,
+      342,
+      261,
+      879
+    ],
+    "baseline_offset": 17
+  }
+}

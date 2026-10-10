@@ -1,0 +1,159 @@
+{
+  "_comment": "麦当劳真实菜单 → 桌宠动画道具的映射表。数据来自麦当劳 MCP query-meals（门店 1420257 深圳八卦二路餐厅，2026-10-09 拉取）。",
+  "_note": "kcal 为公开营养参考估算值，非麦当劳官方数据，仅用于桌宠的趣味可视化，不作为营养建议。",
+  "_source": "mcp__mcd-order__query-meals { storeCode: '1420257', orderType: 1, beType: 1 }",
+  "mappings": [
+    {
+      "code": "1100",
+      "name": "巨无霸",
+      "price": 26.0,
+      "food": "bigmac",
+      "type": "eat",
+      "kcal": 513,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": null
+    },
+    {
+      "code": "1440",
+      "name": "麦辣鸡腿汉堡",
+      "price": 22.5,
+      "food": "mccrispy",
+      "type": "eat",
+      "kcal": 485,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": null
+    },
+    {
+      "code": "1406",
+      "name": "板烧鸡腿堡",
+      "price": 23.5,
+      "food": "grilled",
+      "type": "eat",
+      "kcal": 391,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": null
+    },
+    {
+      "code": "1120",
+      "name": "双层吉士汉堡",
+      "price": 23.0,
+      "food": "dblcheese",
+      "type": "eat",
+      "kcal": 429,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": null
+    },
+    {
+      "code": "1401",
+      "name": "麦乐鸡",
+      "price": 14.0,
+      "food": "mcnuggets5",
+      "type": "eat",
+      "kcal": 213,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "麦乐鸡5块"
+    },
+    {
+      "code": "4810",
+      "name": "薯条",
+      "price": 14.5,
+      "food": "fries-m",
+      "type": "eat",
+      "kcal": 289,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "中薯条"
+    },
+    {
+      "code": "9900008754",
+      "name": "经典麦旋风",
+      "price": 15.5,
+      "food": "mcflurry",
+      "type": "eat",
+      "kcal": 266,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "奥利奥麦旋风"
+    },
+    {
+      "code": "515837",
+      "name": "圆筒冰淇淋",
+      "price": 5.0,
+      "food": "cone",
+      "type": "eat",
+      "kcal": 93,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "圆筒冰淇淋"
+    },
+    {
+      "code": "9900008752",
+      "name": "派",
+      "price": 8.0,
+      "food": "taropie",
+      "type": "eat",
+      "kcal": 232,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "香芋派"
+    },
+    {
+      "code": "4437",
+      "name": "玉米杯",
+      "price": 13.0,
+      "food": "corn",
+      "type": "eat",
+      "kcal": 87,
+      "anim": "eating",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "大杯玉米杯"
+    },
+    {
+      "code": "9900008751",
+      "name": "可乐",
+      "price": 9.5,
+      "food": "coke-m",
+      "type": "drink",
+      "kcal": 147,
+      "anim": "drinking",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "可乐中杯"
+    },
+    {
+      "code": "507409",
+      "name": "麦咖啡™奶铁",
+      "price": 13.9,
+      "food": "coffee-m",
+      "type": "drink",
+      "kcal": 186,
+      "anim": "drinking",
+      "nutritionSource": "mcd-mcp:list-nutrition-foods 2026-10-10",
+      "spec": "热奶铁中杯"
+    }
+  ],
+  "fallback": {
+    "_comment": "未命中映射时的兜底规则：按关键词猜类型，猜不出就当 eat 处理，动画永不缺失。",
+    "drinkKeywords": [
+      "可乐",
+      "雪碧",
+      "咖啡",
+      "奶铁",
+      "美式",
+      "红茶",
+      "牛奶",
+      "果汁",
+      "雪冰",
+      "柠檬",
+      "燕麦奶",
+      "纯悦",
+      "怡泉"
+    ],
+    "defaultType": "eat",
+    "defaultFood": null
+  }
+}

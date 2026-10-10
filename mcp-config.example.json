@@ -1,0 +1,14 @@
+{
+  "_comment": "脱敏后的 MCP 配置示例。请勿填入真实 Token —— 真实值一律用环境变量占位符，运行时由客户端注入。",
+  "_tokenApply": "前往 https://open.mcd.cn/mcp/doc 申请个人 MCP Token，然后 export MCD_MCP_TOKEN=<你的Token>",
+  "mcpServers": {
+    "mcd-order": {
+      "type": "streamablehttp",
+      "url": "https://mcp.mcd.cn",
+      "headers": {
+        "Authorization": "Bearer ${MCD_MCP_TOKEN}"
+      },
+      "disabled": false
+    }
+  }
+}

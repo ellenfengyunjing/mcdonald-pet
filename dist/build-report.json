@@ -1,0 +1,51 @@
+{
+  "rows": [
+    {
+      "row": 0,
+      "state": "idle",
+      "frames": 6
+    },
+    {
+      "row": 1,
+      "state": "running-right",
+      "frames": 8
+    },
+    {
+      "row": 2,
+      "state": "running-left",
+      "frames": 8
+    },
+    {
+      "row": 3,
+      "state": "waving",
+      "frames": 4
+    },
+    {
+      "row": 4,
+      "state": "jumping",
+      "frames": 5
+    },
+    {
+      "row": 5,
+      "state": "failed",
+      "frames": 6
+    },
+    {
+      "row": 6,
+      "state": "waiting",
+      "frames": 5
+    },
+    {
+      "row": 7,
+      "state": "running",
+      "frames": 5
+    },
+    {
+      "row": 8,
+      "state": "review",
+      "frames": 5
+    }
+  ],
+  "png": "D:\\Ellen工作资料\\AI项目\\workbuddy\\workbuddy项目\\mcd-cat-pet\\dist\\spritesheet.png",
+  "webp": "D:\\Ellen工作资料\\AI项目\\workbuddy\\workbuddy项目\\mcd-cat-pet\\dist\\spritesheet.webp"
+}

@@ -1,0 +1,20 @@
+{
+  "state": "litter",
+  "frame_count": 6,
+  "source": "generated\\strip_litter.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    106,
+    191
+  ],
+  "union_box": [
+    0,
+    379,
+    191,
+    728
+  ],
+  "baseline_offset": 17
+}

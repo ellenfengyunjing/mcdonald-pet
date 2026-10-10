@@ -1,0 +1,20 @@
+{
+  "state": "eating",
+  "frame_count": 6,
+  "source": "generated\\Create_one_horizontal_animatio_2026-10-09T07-52-24.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    99,
+    191
+  ],
+  "union_box": [
+    0,
+    468,
+    198,
+    855
+  ],
+  "baseline_offset": 17
+}

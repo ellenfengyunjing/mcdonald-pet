@@ -1,0 +1,13 @@
+{
+  "state": "running-left",
+  "frame_count": 8,
+  "source": "mirrored from running-right",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    136,
+    191
+  ]
+}

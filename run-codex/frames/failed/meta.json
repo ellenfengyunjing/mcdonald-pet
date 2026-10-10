@@ -1,0 +1,13 @@
+{
+  "state": "failed",
+  "frame_count": 6,
+  "source": "run-codex\\decoded\\failed.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    127,
+    191
+  ]
+}

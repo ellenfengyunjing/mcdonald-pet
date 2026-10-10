@@ -1,0 +1,13 @@
+{
+  "state": "jumping",
+  "frame_count": 5,
+  "source": "run-codex\\decoded\\jumping.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    88,
+    191
+  ]
+}

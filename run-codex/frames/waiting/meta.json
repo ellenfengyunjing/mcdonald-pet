@@ -1,0 +1,13 @@
+{
+  "state": "waiting",
+  "frame_count": 5,
+  "source": "run-codex\\decoded\\waiting.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    122,
+    191
+  ]
+}

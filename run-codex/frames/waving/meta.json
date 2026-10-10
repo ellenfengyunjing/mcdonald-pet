@@ -1,0 +1,13 @@
+{
+  "state": "waving",
+  "frame_count": 4,
+  "source": "run-codex\\decoded\\waving.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    123,
+    191
+  ]
+}

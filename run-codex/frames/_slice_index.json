@@ -1,0 +1,106 @@
+{
+  "running-right": {
+    "state": "running-right",
+    "frame_count": 8,
+    "source": "run-codex\\decoded\\running-right.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      136,
+      191
+    ]
+  },
+  "waving": {
+    "state": "waving",
+    "frame_count": 4,
+    "source": "run-codex\\decoded\\waving.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      123,
+      191
+    ]
+  },
+  "jumping": {
+    "state": "jumping",
+    "frame_count": 5,
+    "source": "run-codex\\decoded\\jumping.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      95,
+      191
+    ]
+  },
+  "failed": {
+    "state": "failed",
+    "frame_count": 6,
+    "source": "run-codex\\decoded\\failed.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      127,
+      191
+    ]
+  },
+  "waiting": {
+    "state": "waiting",
+    "frame_count": 5,
+    "source": "run-codex\\decoded\\waiting.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      122,
+      191
+    ]
+  },
+  "running": {
+    "state": "running",
+    "frame_count": 5,
+    "source": "run-codex\\decoded\\running.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      125,
+      191
+    ]
+  },
+  "review": {
+    "state": "review",
+    "frame_count": 5,
+    "source": "run-codex\\decoded\\review.png",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      123,
+      191
+    ]
+  },
+  "running-left": {
+    "state": "running-left",
+    "frame_count": 8,
+    "source": "mirrored from running-right",
+    "cell": [
+      192,
+      208
+    ],
+    "content_size": [
+      136,
+      191
+    ]
+  }
+}

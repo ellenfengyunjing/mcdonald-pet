@@ -1,0 +1,13 @@
+{
+  "state": "running",
+  "frame_count": 5,
+  "source": "run-codex\\decoded\\running.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    125,
+    191
+  ]
+}

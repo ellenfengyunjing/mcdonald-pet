@@ -1,0 +1,20 @@
+{
+  "state": "drinking",
+  "frame_count": 5,
+  "source": "generated\\strip_drinking.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    100,
+    191
+  ],
+  "union_box": [
+    0,
+    295,
+    245,
+    766
+  ],
+  "baseline_offset": 17
+}

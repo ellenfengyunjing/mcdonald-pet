@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 本地运行产物（自检/日志/位置持久化）
+qa/*
+!qa/anim_*.gif
+!qa/codex_contact3.png
+!qa/food_sheet.png
+desktop_pet_pos.json
+orders_pending.jsonl
+*.log
+
+# 敏感信息：只允许环境变量占位符，禁止提交真实 Token
+.env
+*.local.json
+mcp-config.json
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

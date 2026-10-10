@@ -1,0 +1,20 @@
+{
+  "state": "sleeping",
+  "frame_count": 6,
+  "source": "generated\\Create_one_horizontal_animatio_2026-10-09T08-05-13.png",
+  "cell": [
+    192,
+    208
+  ],
+  "content_size": [
+    106,
+    191
+  ],
+  "union_box": [
+    0,
+    357,
+    218,
+    754
+  ],
+  "baseline_offset": 17
+}
